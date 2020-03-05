@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonoGameWindowsStarter
+namespace PointAndClickProject
 {
 #if WINDOWS || LINUX
     /// <summary>

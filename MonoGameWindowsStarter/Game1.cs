@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ContentPipelineLibrary;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace MonoGameWindowsStarter
+namespace PointAndClickProject
 {
     /// <summary>
     /// This is the main type for your game.
@@ -11,6 +12,9 @@ namespace MonoGameWindowsStarter
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
+        Texture2D pixel;
+        RectangleSet rectangles;
 
         public Game1()
         {
@@ -41,6 +45,8 @@ namespace MonoGameWindowsStarter
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            pixel = Content.Load<Texture2D>("pixel");
+            rectangles = Content.Load<RectangleSet>("level1");
         }
 
         /// <summary>
@@ -76,6 +82,12 @@ namespace MonoGameWindowsStarter
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            spriteBatch.Begin();
+
+            foreach (Rectangle r in rectangles.Rectangles)
+                spriteBatch.Draw(pixel, r, Color.BurlyWood);
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
