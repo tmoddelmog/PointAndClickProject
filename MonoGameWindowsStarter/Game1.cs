@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace PointAndClickProject
 {
@@ -13,8 +14,14 @@ namespace PointAndClickProject
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        const int SCREEN_WIDTH = 700, SCREEN_HEIGHT = 700;
+
         Texture2D pixel;
-        RectangleSet rectangles;
+        SpriteFont font;
+        Color background, square;
+        RectangleSet level1, level2;
+        List<Rectangle> current;
+        bool gameOver;
 
         public Game1()
         {
@@ -31,6 +38,9 @@ namespace PointAndClickProject
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            graphics.PreferredBackBufferWidth = SCREEN_WIDTH;
+            graphics.PreferredBackBufferHeight = SCREEN_HEIGHT;
+            this.IsMouseVisible = true;
 
             base.Initialize();
         }
@@ -45,8 +55,15 @@ namespace PointAndClickProject
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            level1 = Content.Load<RectangleSet>("level1");
+            level2 = Content.Load<RectangleSet>("level2");
+            current = level1.Rectangles;
+
             pixel = Content.Load<Texture2D>("pixel");
-            rectangles = Content.Load<RectangleSet>("level1");
+            font = Content.Load<SpriteFont>("font");
+            background = Color.Black;
+            square = Color.Aquamarine;
+            gameOver = false;
         }
 
         /// <summary>
@@ -69,6 +86,27 @@ namespace PointAndClickProject
                 Exit();
 
             // TODO: Add your update logic here
+            if (current.Count == 0 && current == level1.Rectangles)
+            {
+                current = level2.Rectangles;
+                background = Color.White;
+                square = Color.DarkOliveGreen;
+            }
+
+            if (current.Count == 0 && current == level2.Rectangles)
+                gameOver = true;
+
+            MouseState mouse = Mouse.GetState();
+            for (var i = 0; i < current.Count; i++)
+            {
+                if (current[i].X <= mouse.X && mouse.X <= current[i].X + current[i].Width
+                    && current[i].Y <= mouse.Y && mouse.Y <= current[i].Y + current[i].Height)
+                {
+                    if (mouse.LeftButton == ButtonState.Pressed
+                        || mouse.RightButton == ButtonState.Pressed)
+                        current.RemoveAt(i);
+                }
+            }
 
             base.Update(gameTime);
         }
@@ -79,13 +117,25 @@ namespace PointAndClickProject
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(background);
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
 
-            foreach (Rectangle r in rectangles.Rectangles)
-                spriteBatch.Draw(pixel, r, Color.BurlyWood);
+            if (!gameOver)
+            {
+                foreach (Rectangle r in current) spriteBatch.Draw(pixel, r, square);
+            }
+            else
+            {
+                spriteBatch.DrawString(
+                    font,
+                    "GAME OVER",
+                    new Vector2((GraphicsDevice.Viewport.Width / 2) - 6*"GAME OVER".Length,
+                                GraphicsDevice.Viewport.Height / 2),
+                    Color.Crimson
+                    );
+            }
 
             spriteBatch.End();
 

@@ -13,12 +13,12 @@ namespace ContentPipelineLibrary
     {
         public override string GetRuntimeReader(TargetPlatform targetPlatform)
         {
-            return "PointAndClickProject.Reader, PointAndClickProject";
+            return "MonoGameWindowsStarter.Reader, MonoGameWindowsStarter";
         }
 
         protected override void Write(ContentWriter output, TWrite value)
         {
-            output.Write(value.Rectangles.Length);
+            output.Write(value.Rectangles.Count);
             output.Write(value.Width);
             output.Write(value.Height);
             foreach (Rectangle r in value.Rectangles)
